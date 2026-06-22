@@ -1,0 +1,60 @@
+from flask import Flask, render_template, request, send_file
+import pandas as pd
+import io
+import csv
+
+app = Flask(__name__)
+
+COLUMN_MAP = {
+    'Organization Name': '会社名',
+    'Organization Title': '役職',
+    'First Name': '氏名(名)',
+    'Last Name': '氏名(姓)',
+    'Address 1 - Street': '番地',
+    'Address 1 - City': '市区町村',
+    'Address 1 - Region': '都道府県',
+    'Address 1 - Postal Code': '郵便番号',
+    'Phone 1 - Value': '電話番号'
+}
+
+def clean_data(df, category):
+    extracted = pd.DataFrame()
+    for col_key, new_name in COLUMN_MAP.items():
+        extracted[new_name] = df[col_key] if col_key in df.columns else ""
+    extracted['区分'] = category
+    return extracted
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        files = request.files.getlist('files')
+        category = request.form.get('category', '未分類')
+        
+        all_data = []
+        for file in files:
+            if file.filename != '':
+                try:
+                    # 【重要】encodingをutf-8-sigにして、区切り文字を自動判定させる
+                    df = pd.read_csv(file, encoding='utf-8-sig', sep=None, engine='python')
+                    cleaned_df = clean_data(df, category)
+                    all_data.append(cleaned_df)
+                except Exception as e:
+                    return f"エラー: {file.filename} の読み込みに失敗しました。{str(e)}"
+        
+        if all_data:
+            combined_df = pd.concat(all_data, ignore_index=True)
+            output = io.StringIO()
+            combined_df.to_csv(output, index=False, encoding='utf-8-sig')
+            output.seek(0)
+            
+            return send_file(
+                io.BytesIO(output.getvalue().encode('utf-8-sig')),
+                mimetype='text/csv',
+                as_attachment=True,
+                download_name='print_labels.csv'
+            )
+            
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

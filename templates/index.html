@@ -2,23 +2,29 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>DMラベル作成ツール</title>
+    <title>ラベル作成ツール</title>
     <style>
-        body { font-family: sans-serif; margin: 40px; line-height: 1.6; }
+        body { font-family: sans-serif; margin: 40px; }
         .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 500px; }
-        input[type="text"], input[type="file"] { display: block; margin: 10px 0; }
-        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        input, select, button { display: block; margin: 10px 0; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <h1>DMラベル作成ツール</h1>
     <div class="box">
         <form method="post" enctype="multipart/form-data">
-            <label>会社から届いたCSVファイルを選択:</label>
+            <label>1. CSVファイルを選択:</label>
             <input type="file" name="files" multiple required>
             
-            <label>区分を入力（例：上客、尾関など）:</label>
+            <label>2. 区分（上客・尾関など）:</label>
             <input type="text" name="category" placeholder="上客" required>
+            
+            <label>3. データの種類を選択:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="mode" value="google" checked> Google連絡先</label>
+                <label><input type="radio" name="mode" value="shopify"> Shopify</label>
+            </div>
             
             <button type="submit">CSV変換してダウンロード</button>
         </form>

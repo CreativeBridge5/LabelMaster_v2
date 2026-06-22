@@ -4,7 +4,6 @@ import io
 
 app = Flask(__name__)
 
-# マッピング定義
 MAPPINGS = {
     'google': {
         'Organization Name': '会社名',
@@ -26,11 +25,11 @@ MAPPINGS = {
         'Default Address Province Code': '都道府県',
         'Default Address Zip': '郵便番号',
         'Default Address Phone': '電話番号'
-    }
-    'sent': {  # <--- 新しく追加した「送付済み」用
+    },
+    'sent': {
         '会社名': '会社名',
         '肩書': '役職',
-        'お名前（敬称省略）': '氏名(姓)', # ※姓と名が分かれていない場合は姓に統合されます
+        'お名前（敬称省略）': '氏名(姓)',
         '郵便番号': '郵便番号',
         '住所１列目': '番地',
         '住所２列目': '市区町村'
